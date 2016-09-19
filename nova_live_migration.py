@@ -14,6 +14,7 @@
 #    under the License.
 
 import jsonschema
+import random
 
 from rally.common import logging
 from rally import consts
@@ -25,17 +26,17 @@ from rally.plugins.openstack.wrappers import network as network_wrapper
 from rally.task import types
 from rally.task import utils as task_utils
 from rally.task import validation
+from rally.task import atomic
 
 
 class NovaLiveMigrations(utils.NovaScenario):
     """Plugin for Live Migration specific scenarios"""
 
-    @atomic.action_timer("nova.list_servers")
     def _get_random_server(self):
         """Returns random server from existing ones"""
-        ctxt = self.context
-        servers = [server["id"]
-                for server in ctxt.get("tenant", {}).get("servers", [])]
+#        import pdb; pdb.set_trace()
+        servers = self._list_servers()
+        return random.choice(servers)
 
 
 
@@ -45,6 +46,7 @@ class NovaLiveMigrations(utils.NovaScenario):
     @validation.required_services(consts.Service.NOVA)
     @validation.required_openstack(admin=True, users=True)
     @scenario.configure()
+    @atomic.action_timer("get_and_live_migrate_random_server")
     def get_and_live_migrate_random_server(self, image,
                                      flavor, block_migration=False,
                                      disk_over_commit=False, min_sleep=0,

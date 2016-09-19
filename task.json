@@ -1,0 +1,21 @@
+{% set flavor_name = flavor_name or "m1.tiny" %}
+{
+   "NovaLiveMigrations.get_and_live_migrate_random_server": [
+        {
+            "args": {
+                "flavor": {
+                    "name": "{{flavor_name}}"
+                },
+                "image": {
+                    "name": "^cirros$"
+                },
+                "block_migration": false
+            },
+            "runner": {
+                "type": "serial",
+                "times": 2
+            },
+            "context": {}
+        }
+    ]
+}
